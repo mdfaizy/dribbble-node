@@ -50,19 +50,21 @@
 
 
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const cors = require("cors");
 const dotenv = require("dotenv");
+const app = express();
 
 // Load environment variables from .env file
+app.use(cors());
 dotenv.config();
+
 require("./config/database").connect();
 // Middleware setup
 app.use(cookieParser());
-app.use(cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
