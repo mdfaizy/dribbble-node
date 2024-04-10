@@ -59,7 +59,7 @@ const dotenv = require("dotenv");
 
 // Load environment variables from .env file
 dotenv.config();
-
+require("./config/database").connect();
 // Middleware setup
 app.use(cookieParser());
 app.use(cors());
@@ -73,7 +73,7 @@ app.use(fileUpload({
 }));
 
 // Database connection
-require("./config/database").connect();
+
 
 // Importing routes
 const userRoutes = require("./routes/user");
