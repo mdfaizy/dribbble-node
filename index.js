@@ -58,7 +58,10 @@ const dotenv = require("dotenv");
 const app = express();
 
 // Load environment variables from .env file
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: 'http://127.0.0.1:5173'
+}));
 dotenv.config();
 
 require("./config/database").connect();
