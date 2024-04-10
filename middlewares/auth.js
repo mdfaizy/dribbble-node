@@ -42,54 +42,10 @@
 
 
 
-
-
-
-
-
-
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require("../models/User");
-
 dotenv.config();
-
-// exports.auth = async (req, res, next) => {
-//   try {
-//     let token = req.cookies.token || req.body.token || req.header("Authorization");
-// console.log(token);
-//     if (!token) {
-//       return res.status(401).json({ success: false, message: "Token missing" });
-//     }
-
-//     // Remove "Bearer " from token if present
-//     if (token.startsWith("Bearer ")) {
-//       token = token.slice(7, token.length);
-//     }
-
-//     try {
-//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-// console.log("decoded",decoded);
-//       const user = await User.findById(decoded.userId); // Assuming you store user ID in the token payload
-// console.log("user",user);
-//       if (!user) {
-//         return res.status(401).json({ success: false, message: "User not found" });
-//       }
-
-//       // Store user in request object
-//       req.user = user;
-//       next();
-//     } catch (error) {
-//       return res.status(401).json({ success: false, message: "Token is invalid" });
-//     }
-//   } catch (error) {
-//     return res.status(401).json({ success: false, message: "Authentication failed" });
-//   }
-// };
-
-
-
-
 exports.auth = async (req, res, next) => {
   try {
       // Extracting JWT from request cookies, body or header

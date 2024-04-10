@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const profileSchema = new mongoose.Schema({
   location: {
     type: String,
@@ -13,11 +12,9 @@ const profileSchema = new mongoose.Schema({
   image: {
     type: String,
   },
-
   checkbox: [{
     type: Boolean,
   }],
-
 },
 { timestamps: true }
 );
