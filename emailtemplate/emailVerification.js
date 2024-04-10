@@ -83,7 +83,7 @@ const emailverification = (url, email) => {
                 <p>Click the confirmation link in that email to begin using Dribbble.</p>
                 <a href="${url}" class="cta">Verify Email</a>
                 <p>Didn't receive the email? Check your Spam folder, it may have been caught by a filter. If you still don't see it, you can <span>resend the confirmation email.</span></p>
-                <p>Wrong email address? <a href="http://127.0.0.1:5173/signup" class="highlight-yellow">Change it.</a></p>
+                <p>Wrong email address? <a href="https://aquamarine-choux-e4af92.netlify.app/signup" class="highlight-yellow">Change it.</a></p>
 
             </div>
         </div>
