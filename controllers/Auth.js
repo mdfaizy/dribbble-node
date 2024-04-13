@@ -86,6 +86,109 @@ dotenv.config();
 // const emailverification = require("../emailtemplate/emailVerification");
 // dotenv.config();
 
+
+
+
+
+// exports.signup = async (req, res) => {
+//     try {
+//         const { name, username, email, password } = req.body;
+
+//         const existingUser = await User.findOne({ email });
+//         if (existingUser) {
+//             if (existingUser.verified) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     message: "User already exists. Please sign in to continue.",
+//                 });
+//             } else {
+//                 const token = await Token.findOne({ userId: existingUser._id });
+//                 if (token) {
+//                     const url = `${process.env.BASE_URL_FRONT}/users/${existingUser._id}`;
+//                     const emailContent = emailverification(url, email);
+//                     await mailSender(existingUser.email, "Verify Email", emailContent);
+//                     return res.status(200).json({
+//                         success: true,
+//                         message: "Verification email has been resent. Please check your inbox.",
+//                     });
+//                 }
+//             }
+//         }
+
+//         const hashedPassword = await bcrypt.hash(password, 10);
+
+//         const profile = await Profile.create({
+//             gender: null,
+//             dateOfBirth: null,
+//             about: null,
+//             contactNumber: null,
+//         });
+//         const user = new User({
+//             name,
+//             email,
+//             username,
+//             password: hashedPassword,
+//             profile: profile._id,
+//             image: `https://api.dicebear.com/5.x/initials/svg?seed=${name}`,
+//         });
+
+//         const newUser = await user.save();
+//         const token = new Token({
+//             userId: newUser._id,
+//             token: crypto.randomBytes(32).toString("hex"),
+//         });
+//         await token.save();
+
+//         const url = `${process.env.BASE_URL_FRONT}/users/${newUser._id}`;
+//         const emailContent = emailverification(url, email);
+//         await mailSender(newUser.email, "Verify Email", emailContent);
+
+//         res.status(201).json({
+//             success: true,
+//             message: "User created successfully. Please check your email to verify your account.",
+//         });
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ success: false, message: "Internal Server Error" });
+//     }
+// };
+
+// exports.verifyUser = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+
+//         const user = await User.findById(id);
+//         if (!user) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "User not found",
+//             });
+//         }
+
+//         await User.findByIdAndUpdate(id, { verified: true });
+
+//         res.status(200).json({ success: true, message: "Email verified successfully" });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ success: false, message: "Internal Server Error" });
+//     }
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 exports.signup = async (req, res) => {
     try {
         const { name, username, email, password } = req.body;
@@ -98,28 +201,36 @@ exports.signup = async (req, res) => {
                     message: "User already exists. Please sign in to continue.",
                 });
             } else {
-                const token = await Token.findOne({ userId: existingUser._id });
-                if (token) {
-                    const url = `${process.env.BASE_URL_FRONT}/users/${existingUser._id}`;
-                    const emailContent = emailverification(url, email);
-                    await mailSender(existingUser.email, "Verify Email", emailContent);
-                    return res.status(200).json({
-                        success: true,
-                        message: "Verification email has been resent. Please check your inbox.",
+                let token = await Token.findOne({ userId: existingUser._id });
+                if (!token) {
+                    // If token doesn't exist, generate a new one
+                    token = new Token({
+                        userId: existingUser._id,
+                        token: crypto.randomBytes(32).toString("hex"),
                     });
+                    await token.save();
                 }
+                
+                const url = `${process.env.BASE_URL_FRONT}/verify/${existingUser._id}/${token.token}`;
+                const emailContent = emailverification(url, email);
+                await mailSender(existingUser.email, "Verify Email", emailContent);
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Verification email has been sent. Please check your inbox.",
+                });
             }
         }
 
+        // Create a new user
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const profile = await Profile.create({
             gender: null,
             dateOfBirth: null,
             about: null,
             contactNumber: null,
         });
-        const user = new User({
+        const newUser = new User({
             name,
             email,
             username,
@@ -127,15 +238,16 @@ exports.signup = async (req, res) => {
             profile: profile._id,
             image: `https://api.dicebear.com/5.x/initials/svg?seed=${name}`,
         });
+        await newUser.save();
 
-        const newUser = await user.save();
+        // Generate token for the new user
         const token = new Token({
             userId: newUser._id,
             token: crypto.randomBytes(32).toString("hex"),
         });
         await token.save();
 
-        const url = `${process.env.BASE_URL_FRONT}/users/${newUser._id}`;
+        const url = `${process.env.BASE_URL_FRONT}/verify/${newUser._id}/${token.token}`;
         const emailContent = emailverification(url, email);
         await mailSender(newUser.email, "Verify Email", emailContent);
 
@@ -151,7 +263,7 @@ exports.signup = async (req, res) => {
 
 exports.verifyUser = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id, token } = req.params;
 
         const user = await User.findById(id);
         if (!user) {
@@ -161,7 +273,22 @@ exports.verifyUser = async (req, res) => {
             });
         }
 
+        // Find the token associated with the user ID and token
+        const tokenRecord = await Token.findOne({ userId: id, token });
+        if (!tokenRecord) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or expired verification token",
+            });
+        }
+
+        // Optionally, you may want to check if the token has expired here
+
+        // Update user's verified status
         await User.findByIdAndUpdate(id, { verified: true });
+
+        // Delete the token record from the database
+        await Token.findByIdAndDelete(tokenRecord._id);
 
         res.status(200).json({ success: true, message: "Email verified successfully" });
     } catch (error) {
@@ -169,6 +296,7 @@ exports.verifyUser = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
+
 
 
 
