@@ -75,10 +75,10 @@
 
 
 const express = require('express');
+const cors = require("cors");
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
-const cors = require("cors");
 const dotenv = require("dotenv");
 const app = express();
 
@@ -86,10 +86,19 @@ const app = express();
 dotenv.config();
 
 // Middleware setup
-app.use(cors({
-  origin: 'http://127.0.0.1:5173',
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: 'http://127.0.0.1:5173',
+//   credentials: true,
+// }));
+
+
+app.use(
+	cors({
+		origin:"http://127.0.0.1:5173",
+		credentials:true,
+	})
+)
+
 
 
 app.use(cookieParser());
