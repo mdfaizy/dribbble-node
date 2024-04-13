@@ -9,5 +9,5 @@ router.post("/signup", signup);
 router.post("/login", login);
 
 // Route for sending email
-router.get("/users/:id", verifyUser);
+router.get("/users/:id/verify/:token", verifyUser);
 module.exports = router;
