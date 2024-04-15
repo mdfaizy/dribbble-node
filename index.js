@@ -11,9 +11,9 @@ dotenv.config();
 app.use(
   cors({
     
-    origin:"*",
+    origin:"https://aquamarine-choux-e4af92.netlify.app",
     optionSuccessstatus:200,
-    
+
     credentials: true,
   })
 );
