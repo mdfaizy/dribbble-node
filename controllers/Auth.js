@@ -7,6 +7,8 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const Profile = require("../models/profile.js");
 const emailverification = require("../emailtemplate/emailVerification");
+
+// const emailVerification =required("../")
 dotenv.config();
 
 exports.signup = async (req, res) => {
