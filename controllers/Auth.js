@@ -22,10 +22,12 @@ exports.signup = async (req, res) => {
           success: false,
           message: "User already exists. Please sign in to continue.",
         });
+        // process.env.BASE_URL_FRONT
+        
       } else {
         const token = await Token.findOne({ userId: existingUser._id });
         if (token) {
-          const url = `${process.env.BASE_URL_FRONT}/auth/user/${existingUser._id}`;
+          const url = `${"https://aquamarine-choux-e4af92.netlify.app"}/auth/user/${existingUser._id}`;
           const emailContent = emailverification(url, email);
           await mailSender(existingUser.email, "Verify Email", emailContent);
           return res.status(200).json({
@@ -132,7 +134,7 @@ exports.login = async (req, res) => {
 
     if (await bcrypt.compare(password, user.password)) {
       const token = jwt.sign(
-        { email: user.email, id: user._id, accountType: user.accountType },
+        { email: user.email, id: user._id,  },
         process.env.JWT_SECRET,
         {
           expiresIn: "24h",
