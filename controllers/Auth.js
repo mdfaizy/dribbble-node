@@ -27,7 +27,7 @@ exports.signup = async (req, res) => {
       } else {
         const token = await Token.findOne({ userId: existingUser._id });
         if (token) {
-          const url = `${process.env.BASE_URL_FRONT}/auth/user/${existingUser._id}/${tokens.token}`;
+          const url = `${process.env.BASE_URL_FRONT}auth/user/${existingUser._id}/${tokens.token}`;
           const emailContent = emailverification(url, email);
           await mailSender(existingUser.email, "Verify Email", emailContent);
           return res.status(200).json({
