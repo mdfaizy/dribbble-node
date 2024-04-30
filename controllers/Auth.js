@@ -64,7 +64,7 @@ exports.signup = async (req, res) => {
     });
     await tokens.save();
 
-    const url = `${process.env.BASE_URL_FRONT}/user/${newUser._id}/${tokens.token}`;
+    const url = `${process.env.BASE_URL_FRONT}auth/user/${newUser._id}/${tokens.token}`;
     const emailContent = emailverification(url, email);
     await mailSender(newUser.email, "Verify Email", emailContent);
 
